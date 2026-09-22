@@ -1,6 +1,4 @@
-🏨 Hotel & Rating Microservices EcosystemAn enterprise-grade, distributed hotel and rating management platform built using Java 21, Spring Boot, Spring Cloud, Resilience4j, and polyglot persistence (MySQL and PostgreSQL).This central repository brings together all 6 microservices: service orchestration, dynamic discovery, centralized Git configuration, load-balanced edge routing, and fault-tolerant patterns.
-
-📑 Repository Structure & Serviceshotel-rating-microservices-ecosystem/
+🏨 Hotel & Rating Microservices EcosystemAn enterprise-grade, distributed hotel and rating management platform built using Java 21, Spring Boot, Spring Cloud, Resilience4j, and polyglot persistence (MySQL and PostgreSQL).This central repository brings together all 6 microservices: service orchestration, dynamic discovery, centralized Git configuration, load-balanced edge routing, and fault-tolerant patterns.📑 Repository Structure & Serviceshotel-rating-microservices-ecosystem/
 ├── SBMS-Config-server/     # Centralized Git-backed External Configuration (:8085)
 ├── ServiceRegistry_3/      # Netflix Eureka Service Discovery & Heartbeats (:8761)
 ├── API-GATEWAY/            # Spring Cloud Gateway edge router & reverse proxy (:8084)
@@ -9,9 +7,8 @@
 ├── HotelService/           # Hotel catalog and room directory service (:8082) [PostgreSQL]
 ├── screenshots/            # Postman & Eureka verification screenshots
 └── README.md               # Main repository documentation (this file)
-
-🏛️ System Architecture +----------------------------------------------------+
-                       |         SBMS Config Server (:8085)                     |
+🏛️ System Architecture                       +----------------------------------------------------+
+                       |         SBMS Config Server (:8085)                 |
                        | (Fetches configs from Git: Microservices-Config-Server) |
                        +-------------------------+--------------------------+
                                                  |
@@ -82,8 +79,6 @@
 @Retry(name = "ratingHotelService", fallbackMethod = "ratingHotelFallback")
 @RateLimiter(name = "userRateLimiter", fallbackMethod = "ratingHotelFallback")
 public ResponseEntity<User> getSingleUser(@PathVariable String userId) { ... }
-
-
 Circuit Breaker: Transitions across CLOSED, OPEN, and HALF-OPEN states to isolate failing services.Retry: Automatically re-executes calls on transient network failures.Rate Limiter: Guards against traffic spikes.Fallback: Gracefully returns the profile with empty or partial reviews when dependencies fail.📦 Services & Port MatrixServicePortDatabaseTechnology / RoleSBMS-Config-Server8085Git BackendExternalized configuration serverServiceRegistry_38761Eureka In-MemoryService discovery and registration serverAPI-GATEWAY8084NoneEdge entry point, route predicates, reverse proxyUserService8081MySQL (college)Aggregator, orchestrator, Resilience4j hostRatingService8083MySQL (college)User reviews and ratings managementHotelService8082PostgreSQL (microservice)Hotel catalog and facility information🔌 API Endpoints Reference1. API Gateway (http://localhost:8084)GET /users/user/{userId} -> Routed to USER-SERVICEPOST /users/saveUser -> Routed to USER-SERVICEGET /users/getAllUsers -> Routed to USER-SERVICE2. UserService (http://localhost:8081)POST /users/saveUser -> Create a new user profileGET /users/getAllUsers -> Retrieve all registered usersGET /users/user/{userId} -> Get aggregated user details with reviews & hotels3. RatingService (http://localhost:8083)POST /rating/saveRating -> Save a new rating recordGET /rating/getAll -> Fetch all user ratingsGET /rating/userId/{userId} -> Fetch ratings given by a specific userGET /rating/hotelId/{hotelId} -> Fetch ratings received by a specific hotel4. HotelService (http://localhost:8082)POST /hotels/saveHotel -> Register a new hotelGET /hotels/byId/{hotelId} -> Fetch hotel details by IDGET /hotels/allHotels -> List all available hotels📨 Sample Aggregated Response PayloadGET http://localhost:8084/users/user/3f93a924-0d97-4236-a487
 {
   "userId": "3f93a924-0d97-4236-a487",
@@ -119,10 +114,8 @@ Circuit Breaker: Transitions across CLOSED, OPEN, and HALF-OPEN states to isolat
     }
   ]
 }
-
 📸 Testing & Verification ScreenshotsStore test screenshots inside a /screenshots folder at the root of the repository:1. Eureka Dashboard (http://localhost:8761)2. API Gateway Routing Test3. Aggregated Single User Output4. Resilience4j Circuit Breaker Fallback Response🚦 Recommended Startup SequenceSBMS-Config-server (8085)ServiceRegistry_3 (8761)HotelService (8082)RatingService (8083)UserService (8081)API-GATEWAY (8084)💻 Local Setup & InstallationPrerequisitesJDK 21Maven 3.8+MySQL on port 3306 (college database)PostgreSQL on port 5432 (microservice database)Remote Config Repo: Microservices-Config-ServerRun Servicesgit clone https://github.com/chandrakantjadhav1401-tech/hotel-rating-microservices-ecosystem.git
 cd hotel-rating-microservices-ecosystem
-
 
 cd SBMS-Config-server && mvn spring-boot:run
 cd ../ServiceRegistry_3 && mvn spring-boot:run
